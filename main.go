@@ -141,7 +141,7 @@ func initDB() {
 		AllowNativePasswords: true,
 	}
 
-	db, err := sql.Open("mysql", config.FormatDSN())
+	db, err = sql.Open("mysql", config.FormatDSN())
 	checkError(err)
 
 	//设置最大连接数
