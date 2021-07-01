@@ -137,7 +137,7 @@ func initDB() {
 		Passwd:               "secret",
 		Net:                  "tcp",
 		Addr:                 "127.0.0.1:3306",
-		DBName:               "go-blog",
+		DBName:               "go_blog",
 		AllowNativePasswords: true,
 	}
 
@@ -156,6 +156,17 @@ func initDB() {
 	checkError(err)
 }
 
+func createTables() {
+	createArticlesSql := `CREATE TABLE IF NOT EXISTS articles(
+		id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+		body longtext COLLATE utf8mb4_unicode_ci
+	);`
+
+	_, err := db.Exec(createArticlesSql)
+	checkError(err)
+}
+
 func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -165,6 +176,7 @@ func checkError(err error) {
 func main() {
 
 	initDB()
+	createTables()
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
