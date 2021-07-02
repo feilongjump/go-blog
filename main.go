@@ -69,7 +69,40 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "访问文章列表")
+	// 执行查询语句，返回结果集
+	rows, err := db.Query("SELECT * FROM articles")
+	checkError(err)
+	defer rows.Close()
+
+	var articles []Article
+	// 循环读取结果
+	for rows.Next() {
+		var article Article
+		// 扫描每一行的结果并赋值到一个 article 对象中
+		err := rows.Scan(&article.ID, &article.Title, &article.Body)
+		checkError(err)
+		// 将 article 追加到 articles 的这个数组中
+		articles = append(articles, article)
+	}
+
+	// 检查遍历时是否发生错误
+	err = rows.Err()
+	checkError(err)
+
+	// 加载模板
+	tmpl, err := template.ParseFiles("resources/views/articles/index.tmpl")
+	checkError(err)
+
+	tmpl.Execute(w, articles)
+}
+
+func (a Article) Link() string {
+	showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(a.ID, 10))
+	if err != nil {
+		checkError(err)
+		return ""
+	}
+	return showURL.String()
 }
 
 type ArticlesFormData struct {
