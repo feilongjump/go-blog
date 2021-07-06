@@ -8,7 +8,6 @@ import (
 	"go-blog/bootstrap"
 	"go-blog/pkg/database"
 	"go-blog/pkg/logger"
-	"go-blog/pkg/route"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -174,7 +173,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 	// 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 读取对应的文章内容
 	article, err := getArticleByID(id)
@@ -210,7 +209,7 @@ func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 读取对应的文章数据
 	_, err := getArticleByID(id)
@@ -301,7 +300,7 @@ func validateArticleFormData(title string, body string) map[string]string {
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	// 获取 URL 参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 读取对应的文章数据
 	article, err := getArticleByID(id)
@@ -365,6 +364,7 @@ func main() {
 	database.Initialize()
 	db = database.DB
 
+	bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
 
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
