@@ -5,10 +5,10 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"go-blog/bootstrap"
 	"go-blog/pkg/database"
 	"go-blog/pkg/logger"
 	"go-blog/pkg/route"
-	"go-blog/pkg/types"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -23,40 +23,6 @@ var db *sql.DB
 type Article struct {
 	Title, Body string
 	ID          int64
-}
-
-func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-
-	// URL 参数
-	id := route.GetRouteVariable("id", r)
-
-	// 读取对应的文章数据
-	article, err := getArticleByID(id)
-
-	// 如果出现错误
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// 文章未找到
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 文章未找到")
-		} else {
-			// 数据库错误
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
-	} else {
-		// 读取成功
-		tmpl, err := template.New("show.tmpl").
-			Funcs(template.FuncMap{
-				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
-			}).
-			ParseFiles("resources/views/articles/show.tmpl")
-		logger.LogError(err)
-
-		tmpl.Execute(w, article)
-	}
 }
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
@@ -389,15 +355,18 @@ func (a Article) Delete() (rowsAffected int64, err error) {
 	return 0, nil
 }
 
+func getRouteVariable(parameterName string, r *http.Request) string {
+	vars := mux.Vars(r)
+	return vars[parameterName]
+}
+
 func main() {
 
 	database.Initialize()
 	db = database.DB
 
-	route.Initialize()
-	router = route.Router
+	router = bootstrap.SetupRoute()
 
-	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
