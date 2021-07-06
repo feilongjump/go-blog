@@ -24,43 +24,6 @@ type Article struct {
 	ID          int64
 }
 
-func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	// 执行查询语句，返回结果集
-	rows, err := db.Query("SELECT * FROM articles")
-	logger.LogError(err)
-	defer rows.Close()
-
-	var articles []Article
-	// 循环读取结果
-	for rows.Next() {
-		var article Article
-		// 扫描每一行的结果并赋值到一个 article 对象中
-		err := rows.Scan(&article.ID, &article.Title, &article.Body)
-		logger.LogError(err)
-		// 将 article 追加到 articles 的这个数组中
-		articles = append(articles, article)
-	}
-
-	// 检查遍历时是否发生错误
-	err = rows.Err()
-	logger.LogError(err)
-
-	// 加载模板
-	tmpl, err := template.ParseFiles("resources/views/articles/index.tmpl")
-	logger.LogError(err)
-
-	tmpl.Execute(w, articles)
-}
-
-func (a Article) Link() string {
-	showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(a.ID, 10))
-	if err != nil {
-		logger.LogError(err)
-		return ""
-	}
-	return showURL.String()
-}
-
 type ArticlesFormData struct {
 	Title, Body string
 	URL         *url.URL
@@ -367,7 +330,6 @@ func main() {
 	bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
 
-	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
 	router.HandleFunc("/articles/{id:[0-9]+}/edit", articlesEditHandler).Methods("GET").Name("articles.edit")
@@ -376,12 +338,6 @@ func main() {
 
 	// 中间件：强制内容类型为 HTML
 	router.Use(forceHTMLMiddleware)
-
-	// 通过命名路由获取 URL 示例
-	homeUrl, _ := router.Get("home").URL()
-	fmt.Println("homeURL: ", homeUrl)
-	articleURL, _ := router.Get("articles.show").URL("id", "23")
-	fmt.Println("articleURL: ", articleURL)
 
 	http.ListenAndServe(":3000", removeTrailingSlash(router))
 }
