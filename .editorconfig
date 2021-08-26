@@ -2,7 +2,7 @@
 
 root = true
 
-[*.gohtml]
+[*.tmpl]
 ; 设定文件编码
 charset = utf-8
 ; 移除文件尾部多余的空格
