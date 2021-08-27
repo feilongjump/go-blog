@@ -7,7 +7,6 @@ import (
 
 type Article struct {
 	models.BaseModel
-
 	Title string
 	Body  string
 }

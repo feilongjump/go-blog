@@ -9,27 +9,30 @@ import (
 	"strings"
 )
 
-func Render(w io.Writer, name string, data interface{}) {
+func Render(w io.Writer, data interface{}, tmplFiles ...string) {
 	// --- 加载模板 ---
 
 	// 设置模板相对路径
 	viewDir := "resources/views/"
 
-	name = strings.Replace(name, ".", "/", -1)
+	// 遍历传参文件列表 Slice，设置正确的路径，支持 dir.filename 语法糖
+	for i, f := range tmplFiles {
+		tmplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".tmpl"
+	}
 
 	// 所有布局模板文件 Slice
-	files, err := filepath.Glob(viewDir + "/layouts/*.tmpl")
+	layoutFiles, err := filepath.Glob(viewDir + "/layouts/*.tmpl")
 	logger.LogError(err)
 
 	// 在 Slice 里新增目标文件
-	newFiles := append(files, viewDir+name+".tmpl")
+	allFiles := append(layoutFiles, tmplFiles...)
 
 	// 解析模板文件
-	tmpl, err := template.New(name + ".tmpl").
+	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
 			"RouteName2URL": route.Name2URL,
 		}).
-		ParseFiles(newFiles...)
+		ParseFiles(allFiles...)
 	logger.LogError(err)
 
 	// 渲染模板，将所有文章的数据传输进去
