@@ -67,7 +67,7 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 // Create 文章创建页面
 func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
-	view.Render(w, ArticlesFormData{}, "articles.create")
+	view.Render(w, ArticlesFormData{}, "articles.create", "articles._form_field")
 }
 
 func validateArticleFormData(title string, body string) map[string]string {
@@ -114,7 +114,7 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 			Title:  title,
 			Body:   body,
 			Errors: errors,
-		}, "articles.create")
+		}, "articles.create", "articles._form_field")
 	}
 }
 
@@ -205,7 +205,7 @@ func (*ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 				Title:   _article.Title,
 				Body:    _article.Body,
 				Article: _article,
-				Errors:  nil,
+				Errors:  errors,
 			}, "articles.edit", "articles._form_field")
 		}
 	}
