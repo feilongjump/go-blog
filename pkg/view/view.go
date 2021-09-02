@@ -9,8 +9,20 @@ import (
 	"strings"
 )
 
+type D map[string]interface{}
+
+// Render 渲染通用视图
 func Render(w io.Writer, data interface{}, tmplFiles ...string) {
-	// --- 加载模板 ---
+	RenderTemplate(w, "app", data, tmplFiles...)
+}
+
+// RenderSimple 渲染简单的视图
+func RenderSimple(w io.Writer, data interface{}, tmplFiles ...string) {
+	RenderTemplate(w, "simple", data, tmplFiles...)
+}
+
+// RenderTemplate 渲染视图
+func RenderTemplate(w io.Writer, name string, data interface{}, tmplFiles ...string) {
 
 	// 设置模板相对路径
 	viewDir := "resources/views/"
@@ -36,5 +48,5 @@ func Render(w io.Writer, data interface{}, tmplFiles ...string) {
 	logger.LogError(err)
 
 	// 渲染模板，将所有文章的数据传输进去
-	tmpl.ExecuteTemplate(w, "app", data)
+	tmpl.ExecuteTemplate(w, name, data)
 }
