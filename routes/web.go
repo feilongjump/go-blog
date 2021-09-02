@@ -20,7 +20,7 @@ func RegisterWebRoutes(r *mux.Router) {
 	// 用户认证
 	auc := new(controllers.AuthController)
 	r.HandleFunc("/auth/register", auc.Register).Methods("GET").Name("auth.register")
-	r.HandleFunc("/auth/do-register", auc.DoRegister).Methods("GET").Name("auth.doregister")
+	r.HandleFunc("/auth/do-register", auc.DoRegister).Methods("POST").Name("auth.doregister")
 
 	// 文章相关页面
 	ac := new(controllers.ArticlesController)

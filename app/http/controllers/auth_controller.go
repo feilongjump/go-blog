@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"go-blog/app/models/user"
 	"go-blog/pkg/view"
 	"net/http"
 )
@@ -16,5 +17,27 @@ func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "你提交了什么东西过来啊，我不去看，啦啦啦")
+	// 初始化变量
+	name := r.PostFormValue("name")
+	email := r.PostFormValue("email")
+	password := r.PostFormValue("password")
+
+	// 表单验证
+
+	// 验证通过 - 入库 - 跳转到首页
+	_user := user.User{
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
+	_user.Create()
+
+	if _user.ID > 0 {
+		fmt.Fprint(w, "插入成功，ID 为"+_user.GetStringID())
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "创建用户失败，请联系管理员")
+	}
+
+	// 表单不通过 - 重新显示表单
 }
