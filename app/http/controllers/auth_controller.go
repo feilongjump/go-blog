@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-blog/app/models/user"
 	"go-blog/app/requests"
 	"go-blog/pkg/view"
@@ -36,13 +37,13 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 		}, "auth.register")
 	} else {
 		// 验证通过 - 入库 - 跳转到首页
-		//_user.Create()
-		//
-		//if _user.ID > 0 {
-		//	fmt.Fprint(w, "插入成功，ID 为"+_user.GetStringID())
-		//} else {
-		//	w.WriteHeader(http.StatusInternalServerError)
-		//	fmt.Fprint(w, "创建用户失败，请联系管理员")
-		//}
+		_user.Create()
+
+		if _user.ID > 0 {
+			fmt.Fprint(w, "插入成功，ID 为"+_user.GetStringID())
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "创建用户失败，请联系管理员")
+		}
 	}
 }
