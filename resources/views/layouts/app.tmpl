@@ -13,9 +13,11 @@
   <div class="container-sm">
     <div class="row mt-5">
 
-        {{template "sidebar" .}}
+        {{ template "messages" . }}
 
-        {{template "main" .}}
+        {{ template "sidebar" . }}
+
+        {{ template "main" . }}
 
     </div>
   </div>

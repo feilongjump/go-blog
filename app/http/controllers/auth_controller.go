@@ -5,6 +5,7 @@ import (
 	"go-blog/app/models/user"
 	"go-blog/app/requests"
 	"go-blog/pkg/auth"
+	"go-blog/pkg/flash"
 	"go-blog/pkg/view"
 	"net/http"
 )
@@ -41,6 +42,7 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 		_user.Create()
 
 		if _user.ID > 0 {
+			flash.Success("恭喜您注册成功！")
 			auth.Login(_user)
 			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
@@ -62,6 +64,7 @@ func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 	// 尝试登录
 	if err := auth.Attempt(email, password); err == nil {
 		// 登录成功
+		flash.Success("欢迎回来！")
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		// 登录失败
@@ -75,6 +78,6 @@ func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 func (*AuthController) Logout(w http.ResponseWriter, r *http.Request) {
 	auth.Logout()
-
+	flash.Success("您已退出登录")
 	http.Redirect(w, r, "/", http.StatusFound)
 }
