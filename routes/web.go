@@ -25,6 +25,9 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/auth/do-login", middlewares.Guest(auc.DoLogin)).Methods("POST").Name("auth.dologin")
 	r.HandleFunc("/auth/logout", middlewares.Auth(auc.Logout)).Methods("POST").Name("auth.logout")
 
+	uc := new(controllers.UserController)
+	r.HandleFunc("/users/{id:[0-9]+}", uc.Show).Methods("GET").Name("users.show")
+
 	// 文章相关页面
 	ac := new(controllers.ArticlesController)
 	r.HandleFunc("/", ac.Index).Methods("GET").Name("home")
