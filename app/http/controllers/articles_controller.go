@@ -45,7 +45,6 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
-
 	// 获取结果集
 	articles, err := article.GetAll()
 
