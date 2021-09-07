@@ -66,11 +66,32 @@ func (article Article) Delete() (rowsAffected int64, err error) {
 	return result.RowsAffected, nil
 }
 
-func GetByUserID(uid string) ([]Article, error) {
-	var articles []Article
-	if err := model.DB.Where("user_id = ?", uid).Preload("User").Find(&articles).Error; err != nil {
-		return articles, err
-	}
+func GetByUserID(uid string, r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+	// 初始化分页实例
+	db := model.DB.Model(Article{}).Where("user_id = ?", uid).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("users.show", "id", uid), perPage)
 
-	return articles, nil
+	// 获取视图数据
+	viewData := _pager.Paging()
+
+	// 获取数据
+	var articles []Article
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
+}
+
+func GetByCategoryID(cid string, r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+	// 初始化分页实例
+	db := model.DB.Model(Article{}).Where("category_id = ?", cid).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("categories.show", "id", cid), perPage)
+
+	// 获取视图数据
+	viewData := _pager.Paging()
+
+	// 获取数据
+	var articles []Article
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
 }

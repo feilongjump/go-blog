@@ -3,6 +3,7 @@ package category
 import (
 	"go-blog/pkg/logger"
 	"go-blog/pkg/model"
+	"go-blog/pkg/types"
 )
 
 func (c *Category) Create() (err error) {
@@ -21,4 +22,14 @@ func All() ([]Category, error) {
 	}
 
 	return categories, nil
+}
+
+func Get(idStr string) (Category, error) {
+	var category Category
+	id := types.StringToInt(idStr)
+	if err := model.DB.First(&category, id).Error; err != nil {
+		return category, err
+	}
+
+	return category, nil
 }

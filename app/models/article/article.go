@@ -8,10 +8,11 @@ import (
 
 type Article struct {
 	models.BaseModel
-	Title  string `gorm:"type:varchar(255);" valid:"title"`
-	Body   string `gorm:"type:varchar(255);" valid:"body"`
-	UserID uint64 `gorm:"not null;index"`
-	User   user.User
+	Title      string `gorm:"type:varchar(255);" valid:"title"`
+	Body       string `gorm:"type:varchar(255);" valid:"body"`
+	UserID     uint64 `gorm:"not null;index"`
+	User       user.User
+	CategoryID uint64 `gorm:"not null;default:1;index;"`
 }
 
 // Link 方法用来生成文章链接

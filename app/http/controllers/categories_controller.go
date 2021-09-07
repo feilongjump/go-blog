@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"go-blog/app/models/article"
 	"go-blog/app/models/category"
 	"go-blog/app/requests"
 	"go-blog/pkg/flash"
+	"go-blog/pkg/route"
 	"go-blog/pkg/view"
 	"net/http"
 )
@@ -45,6 +47,23 @@ func (*CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (*CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
+func (cc *CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
+	// 获取 URL 参数
+	id := route.GetRouteVariable("id", r)
 
+	// 读取对应的数据
+	_category, err := category.Get(id)
+
+	// 获取结果集
+	articles, pagerData, err := article.GetByCategoryID(_category.GetStringID(), r, 3)
+
+	if err != nil {
+		cc.ResponseForSQLError(w, err)
+	} else {
+		// 加载模板
+		view.Render(w, view.D{
+			"Articles":  articles,
+			"PagerData": pagerData,
+		}, "articles.index", "articles._article_meta")
+	}
 }

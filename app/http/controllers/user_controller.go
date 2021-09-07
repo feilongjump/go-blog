@@ -1,10 +1,8 @@
 package controllers
 
 import (
-	"fmt"
 	"go-blog/app/models/article"
 	"go-blog/app/models/user"
-	"go-blog/pkg/logger"
 	"go-blog/pkg/route"
 	"go-blog/pkg/view"
 	"net/http"
@@ -28,14 +26,13 @@ func (uc *UserController) Show(w http.ResponseWriter, r *http.Request) {
 		uc.ResponseForSQLError(w, err)
 	} else {
 		// 读取成功，显示用户文章列表
-		articles, err := article.GetByUserID(_user.GetStringID())
+		articles, pagerData, err := article.GetByUserID(_user.GetStringID(), r, 3)
 		if err != nil {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
+			uc.ResponseForSQLError(w, err)
 		} else {
 			view.Render(w, view.D{
-				"Articles": articles,
+				"Articles":  articles,
+				"PagerData": pagerData,
 			}, "articles.index", "articles._article_meta")
 		}
 	}
