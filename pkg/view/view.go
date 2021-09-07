@@ -2,6 +2,7 @@ package view
 
 import (
 	"go-blog/app/models/category"
+	"go-blog/app/models/user"
 	"go-blog/pkg/auth"
 	"go-blog/pkg/flash"
 	"go-blog/pkg/logger"
@@ -33,6 +34,7 @@ func RenderTemplate(w io.Writer, name string, data D, tmplFiles ...string) {
 	data["flash"] = flash.All()
 	// data["Categories"], err = category.All()
 	data["Categories"], _ = category.All()
+	data["Users"], _ = user.All()
 
 	// 在 Slice 里新增目标文件
 	allFiles := getTemplateFiles(tmplFiles...)
