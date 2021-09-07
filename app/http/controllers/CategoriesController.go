@@ -44,3 +44,7 @@ func (*CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 		}, "categories.create")
 	}
 }
+
+func (*CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
+
+}
