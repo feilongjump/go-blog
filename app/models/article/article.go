@@ -2,6 +2,7 @@ package article
 
 import (
 	"go-blog/app/models"
+	"go-blog/app/models/category"
 	"go-blog/app/models/user"
 	"go-blog/pkg/route"
 )
@@ -13,6 +14,7 @@ type Article struct {
 	UserID     uint64 `gorm:"not null;index"`
 	User       user.User
 	CategoryID uint64 `gorm:"not null;default:1;index;"`
+	Category   category.Category
 }
 
 // Link 方法用来生成文章链接

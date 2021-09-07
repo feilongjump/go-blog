@@ -152,9 +152,7 @@ func (ac *ArticlesController) Update(w http.ResponseWriter, r *http.Request) {
 
 				if err != nil {
 					// 数据库错误
-					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprint(w, "500 服务器内部错误")
-					return
+					ac.ResponseForSQLError(w, err)
 				}
 
 				// √ 更新成功，跳转到文章详情页

@@ -33,3 +33,12 @@ func Get(idStr string) (Category, error) {
 
 	return category, nil
 }
+
+func (c Category) Update() (rowsAffected int64, err error) {
+	result := model.DB.Save(&c)
+	if err := result.Error; err != nil {
+		return 0, err
+	}
+
+	return result.RowsAffected, nil
+}

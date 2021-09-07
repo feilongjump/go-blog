@@ -44,6 +44,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/categories/create", middlewares.Auth(cc.Create)).Methods("GET").Name("categories.create")
 	r.HandleFunc("/categories", middlewares.Auth(cc.Store)).Methods("POST").Name("categories.store")
 	r.HandleFunc("/categories/{id:[0-9]+}", cc.Show).Methods("GET").Name("categories.show")
+	r.HandleFunc("/categories/{id:[0-9]+}/edit", middlewares.Auth(cc.Edit)).Methods("GET").Name("categories.edit")
+	r.HandleFunc("/categories/{id:[0-9]+}", middlewares.Auth(cc.Update)).Methods("POST").Name("categories.update")
 	// --- 全局中间件 ---
 
 	// 开启会话

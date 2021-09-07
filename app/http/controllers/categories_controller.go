@@ -67,3 +67,58 @@ func (cc *CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
 		}, "articles.index", "articles._article_meta")
 	}
 }
+
+func (cc *CategoriesController) Edit(w http.ResponseWriter, r *http.Request) {
+	// 获取参数
+	id := route.GetRouteVariable("id", r)
+
+	// 获取数据
+	_category, err := category.Get(id)
+
+	if err != nil {
+		cc.ResponseForSQLError(w, err)
+	} else {
+		view.Render(w, view.D{
+			"Category": _category,
+		}, "categories.edit")
+	}
+}
+
+func (cc *CategoriesController) Update(w http.ResponseWriter, r *http.Request) {
+	// 获取参数
+	id := route.GetRouteVariable("id", r)
+
+	// 获取数据
+	_category, err := category.Get(id)
+
+	if err != nil {
+		cc.ResponseForSQLError(w, err)
+	} else {
+		// 校验数据
+		_category.Name = r.PostFormValue("name")
+
+		errors := requests.ValidateCategoryForm(_category)
+
+		if len(errors) == 0 {
+			// 未出现错误
+			rowsAffected, err := _category.Update()
+
+			if err != nil {
+				cc.ResponseForSQLError(w, err)
+			}
+
+			if rowsAffected > 0 {
+				showURL := route.Name2URL("categories.show", "id", id)
+				http.Redirect(w, r, showURL, http.StatusFound)
+			} else {
+				fmt.Fprint(w, "您没有做任何更改！")
+			}
+		} else {
+			// 校验不通过
+			view.Render(w, view.D{
+				"Category": _category,
+				"Errors":   errors,
+			}, "categories.edit")
+		}
+	}
+}
